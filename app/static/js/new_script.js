@@ -1,11 +1,11 @@
 //Bot pop-up intro
-document.addEventListener('DOMContentLoaded', function() {
-    var elemsTap = document.querySelector('.tap-target');
-    var instancesTap = M.TapTarget.init(elemsTap, {});
-    instancesTap.open();
-    setTimeout(function() { instancesTap.close(); }, 4000);
-
-});
+//document.addEventListener('DOMContentLoaded', function() {
+//    var elemsTap = document.querySelector('.tap-target');
+//    var instancesTap = M.TapTarget.init(elemsTap, {});
+//    instancesTap.open();
+//    setTimeout(function() { instancesTap.close(); }, 4000);
+//
+//});
 
 
 //initialization
@@ -37,7 +37,7 @@ $(document).ready(function() {
 	console.log(user_id)
 
     //if you want the bot to start the conversation
-    action_trigger();
+//    action_trigger();
 
 })
 
