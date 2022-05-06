@@ -1,10 +1,16 @@
 import os
+import json
 
 basedir = os.path.abspath(os.path.dirname(__file__))
 
+with open("/etc/config.json") as config_file:
+    config = json.loads(config_file)
+    print(config.get('SECRET_KEY'))
+
 
 class Config:
-    SECRET_KEY = os.environ.get('SECRET_KEY') or 'hard to guess string'
+    # SECRET_KEY = os.environ.get('SECRET_KEY') or 'hard to guess string'
+    SECRET_KEY = config.get('SECRET_KEY') or 'hard to guess string'
 
     @staticmethod
     def init_app(app):
@@ -40,8 +46,7 @@ class UnixConfig(DevelopmentConfig):
     def init_app(cls, app):
         ProductionConfig.init_app(app)
 
-
-# log to syslog
+        # log to syslog
         import logging
         from logging.handlers import SysLogHandler
 
