@@ -4,7 +4,7 @@ import json
 basedir = os.path.abspath(os.path.dirname(__file__))
 
 with open("/etc/config.json") as config_file:
-    config = json.loads(config_file)
+    config = json.load(config_file)
     print(config.get('SECRET_KEY'))
 
 
@@ -19,6 +19,7 @@ class Config:
 
 class DevelopmentConfig(Config):
     DEBUG = True
+    PORT = 5000
     pass
 
 

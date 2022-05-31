@@ -8,9 +8,7 @@ from flask import Flask, g, request, session, redirect, url_for, render_template
 import ldap
 from functools import wraps
 
-app = Flask(__name__)
-app.secret_key = 'dev key'
-app.debug = True
+
 import logging
 
 logger = logging.getLogger(__name__)
