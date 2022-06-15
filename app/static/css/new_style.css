@@ -23,7 +23,7 @@
 }
 
 .head{
-    height:60px;
+    height:40px;
     position:relative;
 }
 
@@ -73,6 +73,7 @@
     font-size: 13px;
     word-wrap: break-word;
     border-radius: 0 20px 20px 20px;
+    white-space: break-spaces;
 }
 
 textarea {
@@ -399,6 +400,14 @@ div.content_data::-webkit-scrollbar {
     border-radius: 10px;
     background: #ffffff;
     box-shadow: 2px 5px 5px 1px #dbdade;
+    margin-left: 41px;
+}
+
+.suggestions-mainmenu {
+    padding: 5px;
+    width: 80%;
+    border-radius: 10px;
+    background: #ffffff;
     margin-left: 41px;
 }
 
@@ -878,7 +887,7 @@ video:focus {
 }
 
 /* Set a style for the submit button */
-.btn {
+.btn1 {
   background-color: dodgerblue;
   color: SlateBlue;
   padding: 5px;
@@ -949,4 +958,12 @@ div.chats1::-webkit-scrollbar {
 .modal1 {
     height: 60%;
     border-radius: 10px;
+}
+
+@media (min-width:200px) and (max-width:800px) {
+
+    .singleCard{
+        width: 63.5%;
+    }
+  
 }

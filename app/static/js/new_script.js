@@ -1,49 +1,39 @@
 //Bot pop-up intro
-//document.addEventListener('DOMContentLoaded', function() {
-//    var elemsTap = document.querySelector('.tap-target');
-//    var instancesTap = M.TapTarget.init(elemsTap, {});
-//    instancesTap.open();
-//    setTimeout(function() { instancesTap.close(); }, 4000);
-//
-//});
-
+var DEBUG = true;  // Change the DEBUG value to true for local setup.
+if (!DEBUG) {
+    var rasa_url = 'https://a4db-59-145-156-106.in.ngrok.io/'
+    if (!window.console) window.console = {};
+    var methods = ["log", "debug", "warn", "info", "error"];
+    for (var i = 0; i < methods.length; i++) {
+        console[methods[i]] = function () { };
+    }
+} else {
+    var rasa_url = 'http://localhost:5005/'
+}
 
 //initialization
-$(document).ready(function() {
-    console.log("11111111 1 1111111111111111111111 initialize")
-
-    //Bot pop-up intro
-    console.log("###### ##### ")
+$(document).ready(function () {
     $("div").removeClass("tap-target-origin")
-    console.log("@@@@ @@@@@@")
     //drop down menu for close, restart conversation & clear the chats.
     $('.dropdown-trigger').dropdown();
-    console.log("&&&&& &&&&&&&")
-
     //initiate the modal for displaying the charts, if you dont have charts, then you comment the below line
     $('.modal').modal();
-
-
-
     //enable this if u have configured the bot to start the conversation. 
-//    showBotTyping();
-    console.log("********** ******")
+    // showBotTyping();
     $("#userInput").prop('disabled', false);
-
     //global variables
     action_name = "action_category_of_issues";
-	
-    user_id = "teamcomputers1"//+Math.random();
-	console.log(user_id)
 
+    // user_id = $('#userInput').attr('placeholder').split(" ")[0];
+    user_id = "Teamcomputers" + Math.floor(Math.random() * 10000);
     //if you want the bot to start the conversation
-//    action_trigger();
+    // action_trigger();
+    send('hi');
 
 })
 
 // ========================== restart conversation ========================
 function restartConversation() {
-    console.log("222222  2222 restart conversation")
     $("#userInput").prop('disabled', true);
     //destroy the existing chart
     $('.collapsible').remove();
@@ -55,106 +45,39 @@ function restartConversation() {
     $(".chats").html("");
     $(".usrInput").val("");
     send("/restart");
+    send("hi");
 }
 
 // ========================== let the bot start the conversation ========================
 function action_trigger() {
-        console.log("3333333333333333  start the conversation action trigger")
-//     send an event to the bot, so that bot can start the conversation by greeting the user
+    //     send an event to the bot, so that bot can start the conversation by greeting the user
     $.ajax({
-//        url: "http://127.0.0.1:1002/login",
-        url: "http://localhost:5005/conversations/${user_id}/execute",
-//		url: `http://55a6c4bf49aa.ngrok.io/conversations/${user_id}/trigger_intent?output_channel=latest`,
+        url: rasa_url + "conversations/" + user_id + "/execute",
         type: "POST",
         contentType: "application/json",
-        data: JSON.stringify({ "name": "greet", "entities": {} }),
-        success: function(botResponse, status) {
-            console.log("Response from Rasa: ", botResponse, "\nStatus: ", status);
+        data: JSON.stringify({ "name": action_name, "entities": {} }),
+        success: function (botResponse, status) {
 
             if (botResponse.hasOwnProperty("messages")) {
                 setBotResponse(botResponse.messages);
             }
             $("#userInput").prop('disabled', false);
         },
-        error: function(xhr, textStatus, errorThrown) {
+        error: function (xhr, textStatus, errorThrown) {
 
             // if there is no response from rasa server
             setBotResponse("");
-            // console.log("Error from bot end: ", textStatus);
             $("#userInput").prop('disabled', false);
-			
-			        }
-    });
-	
-	
-//	//2nd time
-//	r = [
-//
-//    {
-//        "recipient_id": "teamcomputers1",
-//        "text": "This is TeamBot.How may I help you ?",
-//        "buttons": [
-//            {
-//                "payload": "/chromeSlowness",
-//                "title": "Chrome Slowness"
-//            },
-//            {
-//                "payload": "/printerIssue",
-//                "title": "Unable to Print"
-//            }
-//        ]
-//    }
-//]
-//	setBotResponse(r)
 
-	
-	////3rd time
-	
-		message = "/action_greet_user"
-	    $.ajax({
-        url: "http://localhost:5005/webhooks/rest/webhook",
-		//url: "http://b8a92745587e.ngrok.io/webhooks/rest/webhook",
-        type: "POST",
-        contentType: "application/json",
-        data: JSON.stringify({ message: message, sender: user_id }),
-        success: function(botResponse, status) {
-            console.log("Response from Rasa: ", botResponse, "\nStatus: ", status);
-
-            // if user wants to restart the chat and clear the existing chat contents
-            if (message.toLowerCase() == '/restart') {
-                $("#userInput").prop('disabled', false);
-
-                //if you want the bot to start the conversation after restart
-                // action_trigger();
-                return;
-            }
-            setBotResponse(botResponse);
-
-        },
-        error: function(xhr, textStatus, errorThrown) {
-
-            if (message.toLowerCase() == '/restart') {
-                // $("#userInput").prop('disabled', false);
-
-                //if you want the bot to start the conversation after the restart action.
-                // action_trigger();
-                // return;
-            }
-
-            // if there is no response from rasa server
-            setBotResponse("");
-            console.log("Error from bot end: ", textStatus);
         }
     });
 }
 
 //=====================================	user enter or sends the message =====================
-$(".usrInput").on("keyup keypress", function(e) {
+$(".usrInput").on("keyup keypress", function (e) {
     var keyCode = e.keyCode || e.which;
-    console.log("444444444444444444444444444444444444  user send or enter a message")
     var text = $(".usrInput").val();
     if (keyCode === 13) {
-
         if (text == "" || $.trim(text) == "") {
             e.preventDefault();
             return false;
@@ -173,9 +96,6 @@ $(".usrInput").on("keyup keypress", function(e) {
             $(".quickReplies").remove();
             $(".usrInput").blur();
             setUserResponse(text);
-            console.log("---------- -------------")
-            console.log(text)
-            console.log("send messahes -----")
             send(text);
             e.preventDefault();
             return false;
@@ -183,144 +103,101 @@ $(".usrInput").on("keyup keypress", function(e) {
     }
 });
 
-$("#sendButton").on("click", function(e) {
-    console.log("on click event  -------------------------------")
+$("#sendButton").on("click", function (e) {
     var text = $(".usrInput").val();
     if (text == "" || $.trim(text) == "") {
         e.preventDefault();
         return false;
     } else {
-        /*destroy the existing chart
-
-        chatChart.destroy();
-        $(".chart-container").remove();
-        if (typeof modalChart !== 'undefined') { modalChart.destroy(); }
-
-        $(".suggestions").remove();
-        $("#paginated_cards").remove();
-        $(".quickReplies").remove();
-        $(".usrInput").blur();
         setUserResponse(text);
-        send(text);
-        e.preventDefault();
-        return false;*/
-		setUserResponse(text);
         send(text);
     }
 })
 
 //==================================== Set user response =====================================
 function setUserResponse(message) {
-    console.log("666666 ---------------------------")
     var UserResponse = '<img class="userAvatar" src=' + "./static/img/userAvatar.jpg" + '><p class="userMsg">' + message + ' </p><div class="clearfix"></div>';
-    console.log("Set user response ------")
-    console.log(UserResponse)
     $(UserResponse).appendTo(".chats").show("slow");
-
     $(".usrInput").val("");
     scrollToBottomOfResults();
-    showBotTyping();
+    // showBotTyping();
     $(".suggestions").remove();
+    $(".suggestions-mainmenu").remove();
 }
 
 //=========== Scroll to the bottom of the chats after new message has been added to chat ======
 function scrollToBottomOfResults() {
-    console.log("777777777777777 ---------------------")
     var terminalResultsDiv = document.getElementById("chats");
     terminalResultsDiv.scrollTop = terminalResultsDiv.scrollHeight;
 }
 
 //============== send the user message to rasa server =============================================
 function send(message) {
-    console.log("8888888 -------------------------")
     $.ajax({
-        url: "http://localhost:5005/webhooks/rest/webhook",
-		//url: "http://55a6c4bf49aa.ngrok.io/webhooks/rest/webhook",
+        url: window.origin+"/rasa/api/v1",
         type: "POST",
         contentType: "application/json",
         data: JSON.stringify({ message: message, sender: user_id }),
-        success: function(botResponse, status) {
-            console.log("Response from Rasa: ", botResponse, "\nStatus: ", status);
-
+        success: function (botResponse, status) {
             // if user wants to restart the chat and clear the existing chat contents
             if (message.toLowerCase() == '/restart') {
                 $("#userInput").prop('disabled', false);
-
                 //if you want the bot to start the conversation after restart
                 // action_trigger();
                 return;
             }
-            setBotResponse(botResponse);
-
+            setBotResponse(botResponse.response);
         },
-        error: function(xhr, textStatus, errorThrown) {
+        error: function (xhr, textStatus, errorThrown) {
 
-            if (message.toLowerCase() == '/restart') {
-                // $("#userInput").prop('disabled', false);
+            // if (message.toLowerCase() == '/restart') {
+            //     // $("#userInput").prop('disabled', false);
 
-                //if you want the bot to start the conversation after the restart action.
-                // action_trigger();
-                // return;
-            }
+            //     //if you want the bot to start the conversation after the restart action.
+            //     // action_trigger();
+            //     // return;
+            // }
 
             // if there is no response from rasa server
-            setBotResponse("");
-            console.log("Error from bot end: ", textStatus);
+            // setBotResponse("");
+            $("#userInput").prop('disabled', true);
         }
     });
 }
 
 //=================== set bot response in the chats ===========================================
 function setBotResponse(response) {
-     console.log("999999 ------------------------------------")
     //display bot response after 500 milliseconds
-    setTimeout(function() {
+    setTimeout(function () {
         hideBotTyping();
         if (response.length < 1) {
             //if there is no response from Rasa, send  fallback message to the user
             var fallbackMsg = "I am facing some issues, please try again later!!!";
-
             var BotResponse = '<img class="botAvatar" src="./static/img/sara_avatar.png"/><p class="botMsg">' + fallbackMsg + '</p><div class="clearfix"></div>';
-                console.log("set bot response ----")
-                console.log(BotResponse)
             $(BotResponse).appendTo(".chats").hide().fadeIn(1000);
-			restartConversation()
+            restartConversation()
             scrollToBottomOfResults();
         } else {
 
             //if we get response from Rasa
-			console.log("This is the bot respose",response)
             for (i = 0; i < response.length; i++) {
 
                 //check if the response contains "text"
                 if (response[i].hasOwnProperty("text")) {
-                    var BotResponse = '<img class="botAvatar" src="./static/img/sara_avatar.png"/><p class="botMsg">' +response[i].text + '</p><div class="clearfix"></div>';
-                    console.log("set bot response ------- *** ---")
-                    console.log(BotResponse)
-                    console.log(response[i].text)
-                    if (response[i].text == "Welcome before procedding we need to verify you so would to like to give proceed."){
-                     console.log('fgjbfjgbhdfbgdjbgdjfb ==== fgdsjfgfhjd ')
-                     $('#login-form').appendTo(".chats").show().fadeIn(1000)
+                    var BotResponse = '<img class="botAvatar" src="./static/img/sara_avatar.png"/><p class="botMsg">' + response[i].text + '</p><div class="clearfix"></div>';
+                    if (response[i].text == "Welcome before procedding we need to verify you so would to like to give proceed.") {
+                        $('#login-form').appendTo(".chats").show().fadeIn(1000)
                     }
-                    else{
-                     console.log("My name is kuldeep")
-                     $(BotResponse).appendTo(".chats").hide().fadeIn(1000);
+                    else {
+                        $(BotResponse).appendTo(".chats").hide().fadeIn(1000);
                     }
-
-
-
-                    console.log("Hiding a form element and div element -----  ----")
-//                    $('.widget').hide()
-//                    $('#myModal').show()
                 }
 
                 //check if the response contains "images"
                 if (response[i].hasOwnProperty("image")) {
                     var BotResponse = '<div class="singleCard">' + '<img class="imgcard" src="' + response[i].image + '">' + '</div><div class="clearfix">';
                     $(BotResponse).appendTo(".chats").hide().fadeIn(1000);
-
                 }
-
 
                 //check if the response contains "buttons" 
                 if (response[i].hasOwnProperty("buttons")) {
@@ -337,11 +214,10 @@ function setBotResponse(response) {
                         var BotResponse = '<div class="video-container"> <iframe src="' + video_url + '" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe> </div>'
                         $(BotResponse).appendTo(".chats").hide().fadeIn(1000);
                     }
-					
-					
-					//check if the custom payload type is "pdf_attachment"
+
+
+                    //check if the custom payload type is "pdf_attachment"
                     if (response[i].attachment.type == "pdf_attachment") {
-						console.log("PDF")
                         renderPdfAttachment(response[i]);
                         return;
                     }
@@ -357,7 +233,7 @@ function setBotResponse(response) {
                         return;
                     }
 
-                    
+
 
                     //check if the custom payload type is "dropDown"
                     if (response[i].custom.payload == "dropDown") {
@@ -410,13 +286,29 @@ function setBotResponse(response) {
                     }
                 }
             }
-            scrollToBottomOfResults();
+
+
         }
-    }, 500);
+    }, 200);
+    setTimeout(function () {
+        if (!(response.length == 2 && response[0].text.toLowerCase().includes('ais techmate'))) {
+            if (!((response.length == 1))) {
+                if (!(response[0].text.toLowerCase().includes('href'))) {
+                    $('<div class="singleCard " style=""><div class="suggestions-mainmenu"><div class="menu"><div class="menuChips" id="main-menu" data-payload="/mainmenu">Go To Main Menu</div></div></div></div>').appendTo('.chats');
+                } else if (response[0].text.toLowerCase().includes('created')||response[0].text.toLowerCase().includes('generate')) {
+                    $('<div class="singleCard " style=""><div class="suggestions-mainmenu"><div class="menu"><div class="menuChips" id="main-menu" data-payload="/mainmenu">Go To Main Menu</div></div></div></div>').appendTo('.chats');
+                }
+            } else if (response[0].text.toLowerCase().includes('thank')||response[0].text.toLowerCase().includes('rephrase')) {
+                $('<div class="singleCard " style=""><div class="suggestions-mainmenu"><div class="menu"><div class="menuChips" id="main-menu" data-payload="/mainmenu">Go To Main Menu</div></div></div></div>').appendTo('.chats');
+            }
+        }
+        scrollToBottomOfResults();
+    }, 1700)
+    
 }
 
 //====================================== Toggle chatbot =======================================
-$("#profile_div").click(function() {
+$("#profile_div").click(function () {
     $(".profile_div").toggle();
     $(".widget").toggle();
 });
@@ -424,11 +316,10 @@ $("#profile_div").click(function() {
 
 //====================================== Render Pdf attachment =======================================
 function renderPdfAttachment(data) {
-	
-	
+
+
     pdf_url = data.attachment.payload.url;
     pdf_title = "Leave Policy Team Computers"//attachment.payload.title;
-	console.log(pdf_url,pdf_title)
     pdf_attachment =
         '<div class="pdf_attachment">' +
         '<div class="row">' +
@@ -457,10 +348,10 @@ function renderDropDwon(data) {
     scrollToBottomOfResults();
 
     //add event handler if user selects a option.
-    $("select").change(function() {
+    $("select").change(function () {
         var value = ""
         var label = ""
-        $("select option:selected").each(function() {
+        $("select option:selected").each(function () {
             label += $(this).text();
             value += $(this).val();
         });
@@ -474,7 +365,7 @@ function renderDropDwon(data) {
 //====================================== Suggestions ===========================================
 
 function addSuggestion(textToAdd) {
-    setTimeout(function() {
+    setTimeout(function () {
         var suggestions = textToAdd;
         var suggLength = textToAdd.length;
         $(' <div class="singleCard"> <div class="suggestions"><div class="menu"></div></div></diV>').appendTo(".chats").hide().fadeIn(1000);
@@ -487,10 +378,9 @@ function addSuggestion(textToAdd) {
 }
 
 // on click of suggestions, get the value and send to rasa
-$(document).on("click", ".menu .menuChips", function() {
+$(document).on("click", ".menu .menuChips", function () {
     var text = this.innerText;
     var payload = this.getAttribute('data-payload');
-    console.log("payload: ", this.getAttribute('data-payload'))
     setUserResponse(text);
     send(payload);
 
@@ -502,20 +392,20 @@ $(document).on("click", ".menu .menuChips", function() {
 //====================================== functions for drop-down menu of the bot  =========================================
 
 //restart function to restart the conversation.
-$("#restart").click(function() {
+$("#restart").click(function () {
     restartConversation()
 });
 
 //clear function to clear the chat contents of the widget.
-$("#clear").click(function() {
-    $(".chats").fadeOut("normal", function() {
+$("#clear").click(function () {
+    $(".chats").fadeOut("normal", function () {
         $(".chats").html("");
         $(".chats").fadeIn();
     });
 });
 
 //close function to close the widget.
-$("#close").click(function() {
+$("#close").click(function () {
     $(".profile_div").toggle();
     $(".widget").toggle();
     scrollToBottomOfResults();
@@ -622,13 +512,11 @@ function showQuickReplies(quickRepliesData) {
 }
 
 // on click of quickreplies, get the value and send to rasa
-$(document).on("click", ".quickReplies .chip", function() {
+$(document).on("click", ".quickReplies .chip", function () {
     var text = this.innerText;
     var payload = this.getAttribute('data-payload');
-    console.log("chip payload: ", this.getAttribute('data-payload'))
     setUserResponse(text);
     send(payload);
-
     //delete the quickreplies
     $(".quickReplies").remove();
 
@@ -645,7 +533,6 @@ function getLocation() {
 
 function getUserPosition(position) {
     response = "Latitude: " + position.coords.latitude + " Longitude: " + position.coords.longitude;
-    console.log("location: ", response);
 
     //here you add the intent which you want to trigger 
     response = '/inform{"latitude":' + position.coords.latitude + ',"longitude":' + position.coords.longitude + '}';
@@ -658,16 +545,12 @@ function handleLocationAccessError(error) {
 
     switch (error.code) {
         case error.PERMISSION_DENIED:
-            console.log("User denied the request for Geolocation.")
             break;
         case error.POSITION_UNAVAILABLE:
-            console.log("Location information is unavailable.")
             break;
         case error.TIMEOUT:
-            console.log("The request to get user location timed out.")
             break;
         case error.UNKNOWN_ERROR:
-            console.log("An unknown error occurred.")
             break;
     }
 
@@ -682,11 +565,12 @@ function handleLocationAccessError(error) {
 
 //======================================bot typing animation ======================================
 function showBotTyping() {
-
-    var botTyping = '<img class="botAvatar" id="botAvatar" src="./static/img/sara_avatar.png"/><div class="botTyping">' + '<div class="bounce1"></div>' + '<div class="bounce2"></div>' + '<div class="bounce3"></div>' + '</div>'
-    $(botTyping).appendTo(".chats");
-    $('.botTyping').show();
-    scrollToBottomOfResults();
+    setTimeout(function () {
+        var botTyping = '<img class="botAvatar" id="botAvatar" src="./static/img/sara_avatar.png"/><div class="botTyping">' + '<div class="bounce1"></div>' + '<div class="bounce2"></div>' + '<div class="bounce3"></div>' + '</div>'
+        $(botTyping).appendTo(".chats");
+        $('.botTyping').show();
+        scrollToBottomOfResults();
+    }, 500)
 }
 
 function hideBotTyping() {
@@ -776,7 +660,7 @@ function createChart(title, labels, backgroundColor, chartsData, chartType, disp
 }
 
 // on click of expand button, get the chart data from gloabl variable & render it to modal
-$(document).on("click", "#expand", function() {
+$(document).on("click", "#expand", function () {
 
     //the parameters are declared gloabally while we get the charts data from rasa.
     createChartinModal(title, labels, backgroundColor, chartsData, chartType, displayLegend)
@@ -826,3 +710,4 @@ function createChartinModal(title, labels, backgroundColor, chartsData, chartTyp
     });
 
 }
+

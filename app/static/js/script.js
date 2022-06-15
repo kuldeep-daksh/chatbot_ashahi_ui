@@ -1,11 +1,11 @@
 //Bot pop-up intro
-//document.addEventListener('DOMContentLoaded', function() {
-//    var elemsTap = document.querySelector('.tap-target');
-//    var instancesTap = M.TapTarget.init(elemsTap, {});
-//    instancesTap.open();
-//    setTimeout(function() { instancesTap.close(); }, 4000);
-//
-//});
+document.addEventListener('DOMContentLoaded', function() {
+    var elemsTap = document.querySelector('.tap-target');
+    var instancesTap = M.TapTarget.init(elemsTap, {});
+    instancesTap.open();
+    setTimeout(function() { instancesTap.close(); }, 4000);
+
+});
 
 
 //initialization
@@ -25,19 +25,19 @@ $(document).ready(function() {
 
 
 
-    //enable this if u have configured the bot to start the conversation.
+    //enable this if u have configured the bot to start the conversation. 
 //    showBotTyping();
     console.log("********** ******")
     $("#userInput").prop('disabled', false);
 
     //global variables
     action_name = "action_category_of_issues";
-
+	
     user_id = "teamcomputers1"//+Math.random();
 	console.log(user_id)
 
     //if you want the bot to start the conversation
-//    action_trigger();
+    action_trigger();
 
 })
 
@@ -63,7 +63,7 @@ function action_trigger() {
 //     send an event to the bot, so that bot can start the conversation by greeting the user
     $.ajax({
 //        url: "http://127.0.0.1:1002/login",
-        url: "http://localhost:5005/conversations/${user_id}/execute",
+        url: "http://172.16.19.230:5005/conversations/${user_id}/execute",
 //		url: `http://55a6c4bf49aa.ngrok.io/conversations/${user_id}/trigger_intent?output_channel=latest`,
         type: "POST",
         contentType: "application/json",
@@ -82,11 +82,11 @@ function action_trigger() {
             setBotResponse("");
             // console.log("Error from bot end: ", textStatus);
             $("#userInput").prop('disabled', false);
-
+			
 			        }
     });
-
-
+	
+	
 //	//2nd time
 //	r = [
 //
@@ -107,12 +107,12 @@ function action_trigger() {
 //]
 //	setBotResponse(r)
 
-
+	
 	////3rd time
-
+	
 		message = "/action_greet_user"
 	    $.ajax({
-        url: "http://localhost:5005/webhooks/rest/webhook",
+        url: "http://172.16.19.230:5005/webhooks/rest/webhook",
 		//url: "http://b8a92745587e.ngrok.io/webhooks/rest/webhook",
         type: "POST",
         contentType: "application/json",
@@ -234,7 +234,7 @@ function scrollToBottomOfResults() {
 function send(message) {
     console.log("8888888 -------------------------")
     $.ajax({
-        url: "http://localhost:5005/webhooks/rest/webhook",
+        url: "http://172.16.19.230:5005/webhooks/rest/webhook",
 		//url: "http://55a6c4bf49aa.ngrok.io/webhooks/rest/webhook",
         type: "POST",
         contentType: "application/json",
