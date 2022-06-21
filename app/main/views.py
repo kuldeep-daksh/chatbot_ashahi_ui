@@ -16,7 +16,7 @@ logger = logging.getLogger(__name__)
 # app.config['LDAP_USERNAME'] = 'CN=Administrator,CN=Users,DC=tcplcoe,DC=com'
 # app.config['LDAP_PASSWORD'] = 'Xanadu@@12345'
 
-
+"CN=Tarun Gupta,OU=Delhi AISGlass,OU=AIS Users,DC=asahiindia,DC=com"
 
 def login_required(f):
     @wraps(f)

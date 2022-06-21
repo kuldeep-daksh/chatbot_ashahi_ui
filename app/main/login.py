@@ -8,6 +8,13 @@ import logging
 logger = logging.getLogger(__name__)
 
 
+# app.config['LDAP_HOST'] = '172.16.19.20'
+# app.config['LDAP_BASE_DN'] = 'CN=Users,DC=tcplcoe,DC=com'
+# app.config['LDAP_USERNAME'] = 'CN=Administrator,CN=Users,DC=tcplcoe,DC=com'
+# app.config['LDAP_PASSWORD'] = 'Xanadu@@12345'
+
+username = f"CN={username},OU=Delhi AISGlass,OU=AIS Users,DC=asahiindia,DC=com"
+password = "tasty@lemon09"
 
 @main.route('/login', methods=('GET', 'POST'))
 def login():
@@ -19,10 +26,10 @@ def login():
         password = request.form['password']
         if username and password:
             try:
-                # user_exist = is_user_exist(
+                user_exist = is_user_exist(
+                    "80.0.0.108", username, password)
+                # user_exist = is_user_exist_test(
                 #     "172.16.19.20", username, password)
-                user_exist = is_user_exist_test(
-                    "172.16.19.20", username, password)
                 if user_exist:
                     authenticate_user(username)
                     return redirect(url_for('main.index'))
@@ -65,16 +72,17 @@ def is_user_exist(address, username, password):
     conn = ldap.initialize('ldap://' + address)
     conn.protocol_version = 3
     conn.set_option(ldap.OPT_REFERRALS, 0)
+    print("gfdknkgnhkgfnhgkhn")
     return conn.simple_bind_s(username, password)
 
 
-def is_user_exist_test(address, username, password):
-    userid = "13666"
-    pwd = "12345"
-    if userid == username and password == pwd:
-        return True
-    else:
-        return False
+# def is_user_exist_test(address, username, password):
+#     userid = "13666"
+#     pwd = "12345"
+#     if userid == username and password == pwd:
+#         return True
+#     else:
+#         return False
 
 
 def is_user_authenticated():
