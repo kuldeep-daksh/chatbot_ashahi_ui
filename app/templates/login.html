@@ -11,7 +11,7 @@
     <form class="p-3 mt-3" action="/login" method="post">
         <div class="form-field d-flex align-items-center">
             <span class="fa fa-user"></span>
-            <input type="text" name="userid" id="userid" placeholder="User ID" required>
+            <input type="text" name="userid" id="userid" placeholder="User login ID" required>
         </div>
         <div class="form-field d-flex align-items-center">
             <span class="fa fa-key"></span>
@@ -19,7 +19,7 @@
         </div>
         <button class="btn mt-3">Authenticate</button>
         {% if error %}
-        <p><strong>Error</strong>: {{error}}</p>
+        <div class="text-center margin-top:10px"><p id="error"><strong>Error</strong>: {{error}}</p></div>
         {% endif %}
     </form>
 
