@@ -27,10 +27,10 @@ def login():
         dn = userfullpath.format(username)
         if username and password:
             try:
-                # ad_response = authenticate_ad_user(
-                #     "80.0.0.108", username, password)
-                ad_response = authenticate_ad_user_test(
+                ad_response = authenticate_ad_user(
                     "80.0.0.108", dn, password)
+                # ad_response = authenticate_ad_user_test(
+                #     "80.0.0.108", dn, password)
                 if ad_response != "Invalid LDAP Credentials":
                     authenticate_user(username)
                     return redirect(url_for('main.index'))
